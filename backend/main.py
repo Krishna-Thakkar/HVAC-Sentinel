@@ -1,3 +1,5 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -5,11 +7,21 @@ from app.config import settings
 from app.routes.health import router as health_router
 from app.routes.systems import router as systems_router
 from app.routes.alerts import router as alerts_router
+from app.services.pipeline import run_pipeline
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Run the HVAC data pipeline once at startup and cache results in memory."""
+    run_pipeline()
+    yield
+
 
 app = FastAPI(
     title="HVAC Sentinel API",
     description="AI-powered HVAC maintenance prioritization system.",
-    version="0.1.0",
+    version="0.2.0",
+    lifespan=lifespan,
 )
 
 app.add_middleware(
@@ -29,7 +41,7 @@ app.include_router(alerts_router)
 def root():
     return {
         "service": "HVAC Sentinel API",
-        "version": "0.1.0",
+        "version": "0.2.0",
         "docs": "/docs",
     }
 

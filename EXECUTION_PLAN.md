@@ -619,6 +619,9 @@ At the end of each phase:
 chore: initialize HVAC Sentinel project scaffold
 docs: update execution plan and development workflow
 
+### Phase 1
+feat: implement backend intelligence pipeline with anomaly detection and incident engine
+
 ---
 
 # Claude Code Operating Instructions
@@ -689,14 +692,14 @@ After completing tasks:
 - API endpoints.
 
 ## Checklist
-- [ ] Implement dataset loader
-- [ ] Implement preprocessing
-- [ ] Implement feature engineering
-- [ ] Implement anomaly detection
-- [ ] Implement incident aggregation
-- [ ] Implement FastAPI routes
-- [ ] Add backend tests
-- [ ] Validate API responses
+- [x] Implement dataset loader
+- [x] Implement preprocessing
+- [x] Implement feature engineering
+- [x] Implement anomaly detection
+- [x] Implement incident aggregation
+- [x] Implement FastAPI routes
+- [x] Add backend tests (72/72 passing)
+- [x] Validate API responses
 
 ---
 
@@ -761,6 +764,12 @@ After completing tasks:
 - [ ] Add recommendation generation
 - [ ] Add assistant endpoint
 - [ ] Validate output quality
+
+## Explainability Enhancements
+
+- [ ] Add anomaly explainability metadata (detection source/method) to incidents and alerts
+- [ ] Add human-readable incident reasoning summaries
+- [ ] Improve confidence score interpretation/explanation
 
 ---
 
@@ -867,6 +876,40 @@ The project succeeds if:
 
 # Implementation Notes
 
+## Phase 1 — 2026-05-09
+
+**Services created** (all in `backend/app/services/`):
+- `data_loader.py` — loads and validates CSV, saves processed artifacts to `datasets/processed/`
+- `preprocessing.py` — per-unit forward-fill using `transform`, `is_imputed` column
+- `feature_engineering.py` — rolling 10-window mean/std, ROC, vibration delta, AP ratio, trend
+- `anomaly_detection.py` — dual-method: rolling z-score (spikes) + rolling mean drift (sustained shifts)
+- `incident_engine.py` — consecutive-run grouping, duration gating, multi-sensor exception, severity/confidence
+- `pipeline.py` — orchestrator with in-memory cache, lifespan startup event
+
+**Key anomaly detection insight:**
+Rolling z-scores alone miss sustained level changes (rolling mean adapts). Added a complementary drift detector: `|rolling_mean - unit_median| / unit_std > 2.0`. This catches HVAC_1's multi-sensor degradation and HVAC_3's pressure decline, which pure z-score analysis misses.
+
+**Multi-sensor exception in incident_engine:**
+Single-row incidents with ≥ 2 sensors simultaneously anomalous are NOT suppressed. Correlated multi-sensor events represent real operational failures even if short-lived. This correctly surfaces HVAC_2's two acute mechanical events.
+
+**Final system state from pipeline:**
+- HVAC_2: health=59, critical — 3 active incidents (most urgent)
+- HVAC_1: health=75, critical — 1 critical incident (25-row 4-sensor drift in last 1.5 hrs)
+- HVAC_3: health=76, critical — 1 critical incident (16-row sustained pressure drop in last 3 hrs)
+- HVAC_4: health=90, warning — 1 warning incident (1-row 2-sensor event)
+- HVAC_5: health=100, normal — all suppressed
+
+**Constants module** (`app/constants.py`): All thresholds centralized — no magic numbers in service code.
+
+**Models** (`app/models/`): Pydantic schemas for `Incident`, `Alert`/`AlertFeed`, `HvacSystemOverview`/`HvacSystemDetail`/`SensorReading`.
+
+**Tests:** 72 tests, 72 passing — covering data loading, preprocessing, anomaly detection, incident engine, and all API endpoints.
+
+**Processed artifacts saved to:**
+- `datasets/processed/01_preprocessed.csv`
+- `datasets/processed/02_features.csv`
+- `datasets/processed/03_anomalies.csv`
+
 ## Phase 0 — 2026-05-09
 
 - Repository structure created per EXECUTION_PLAN.md specification.
@@ -887,8 +930,6 @@ The project succeeds if:
 - Initial repository baseline committed and pushed:
   - `chore: initialize HVAC Sentinel project scaffold`
 - A temporary `.venv/` was created in the root for dataset analysis — it is gitignored and can be removed if desired.
-
-
 
 # Blockers / Issues
 
