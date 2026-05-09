@@ -1,0 +1,17 @@
+{
+  "expo": {
+    "name": "HVAC Sentinel",
+    "slug": "hvac-sentinel",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.hvacsentinel.app"
+    },
+    "android": {
+      "package": "com.hvacsentinel.app"
+    },
+    "web": {}
+  }
+}
