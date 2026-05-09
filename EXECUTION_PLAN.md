@@ -144,6 +144,15 @@ React Native Mobile App
 
 ---
 
+# Recommended Development Environment
+
+- Node.js 20+
+- Expo SDK 54
+- Python 3.11+
+- npm 10+
+
+---
+
 # Repository Structure
 
 ```text
@@ -576,6 +585,42 @@ Human oversight is REQUIRED for:
 
 ---
 
+# Git & Version Control Workflow
+
+Each completed phase should include:
+- a semantic git commit message,
+- a concise implementation summary,
+- updated execution checklist items,
+- documented blockers/issues if applicable.
+
+## Commit Message Format
+
+Use semantic commit conventions:
+
+- feat: new functionality
+- fix: bug fixes
+- refactor: code restructuring
+- docs: documentation updates
+- chore: tooling/setup/configuration
+- test: testing-related updates
+
+## Commit Workflow
+
+At the end of each phase:
+1. Generate recommended semantic commit message
+2. Commit completed work
+3. Push to remote repository
+4. Update EXECUTION_PLAN.md progress
+5. Document implementation notes and blockers
+
+## Commit History
+
+### Phase 0
+chore: initialize HVAC Sentinel project scaffold
+docs: update execution plan and development workflow
+
+---
+
 # Claude Code Operating Instructions
 
 Before making changes:
@@ -586,11 +631,13 @@ Before making changes:
 5. Prefer clarity over cleverness.
 
 After completing tasks:
-1. Update task checklist.
-2. Add implementation notes.
-3. Add blockers/issues if any.
-4. Suggest improvements separately.
-5. Do not modify unrelated files.
+1. Update task checklist
+2. Add implementation notes
+3. Add blockers/issues if any
+4. Suggest improvements separately
+5. Do not modify unrelated files
+6. Generate a semantic git commit message
+7. Summarize completed architectural changes
 
 ---
 
@@ -613,8 +660,8 @@ After completing tasks:
 ## Checklist
 - [x] Create repository structure
 - [x] Setup backend folder
-- [x] Setup Expo React Native app (scaffolded; requires Node 18+ to install deps)
-- [ ] Configure Git (pending — git init not yet run)
+- [x] Setup Expo React Native app
+- [x] Configure Git
 - [x] Add environment variable support (.env.example created)
 - [x] Add requirements.txt
 - [x] Add package.json dependencies
@@ -822,14 +869,26 @@ The project succeeds if:
 
 ## Phase 0 — 2026-05-09
 
-- Repository structure created per EXECUTION_PLAN.md spec.
-- Backend: FastAPI app scaffold with `main.py`, `config.py`, route stubs for `/health`, `/systems`, `/alerts`. Routes return placeholder responses — implemented in Phase 1.
-- Mobile: Expo TypeScript scaffold created manually (Node 14 on this machine is below Expo's Node 18 minimum). All structure, types, theme, navigation, hooks, and API client are in place. Run `npm install` after upgrading Node.
+- Repository structure created per EXECUTION_PLAN.md specification.
+- Backend: FastAPI scaffold initialized with modular architecture including `main.py`, `config.py`, route stubs for `/health`, `/systems`, and `/alerts`. Backend APIs verified locally using Uvicorn.
+- Mobile: Expo React Native TypeScript scaffold initialized using React Navigation architecture. Navigation, theme system, hooks, API client structure, and typed interfaces are configured.
+- Frontend environment upgraded and stabilized on Expo SDK 54 with Node.js 20+ for Expo Go compatibility.
+- Removed `expo-router` configuration in favor of a simpler React Navigation setup to avoid mixed navigation architectures.
+- Expo dependency ecosystem stabilized after SDK migration and dependency reconciliation.
+- Mobile application rendering and navigation verified successfully on a physical Android device using Expo Go.
 - Dataset analysis complete — see `backend/data/dataset_report.md`.
-- Key dataset findings: HVAC_2 has multi-sensor anomalies (temp + airflow + vibration). HVAC_3 has sustained pressure deviation. These should be the primary incident sources in Phase 1 detection logic.
-- A temporary `.venv/` was created in the root for dataset analysis — it is gitignored and can be removed.
+- Key dataset findings:
+  - HVAC_2 shows multi-sensor anomalies (temperature, airflow, vibration)
+  - HVAC_3 shows sustained pressure deviation
+  - Single-row spikes exist and should be suppressed during incident aggregation
+  - Missing airflow and temperature values support per-unit forward-fill preprocessing
+- These observations should guide Phase 1 anomaly detection and incident aggregation logic.
+- Semantic git workflow established for phased development tracking.
+- Initial repository baseline committed and pushed:
+  - `chore: initialize HVAC Sentinel project scaffold`
+- A temporary `.venv/` was created in the root for dataset analysis — it is gitignored and can be removed if desired.
 
----
+
 
 # Blockers / Issues
 
